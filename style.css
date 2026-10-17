@@ -1,0 +1,470 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: Arial, sans-serif;
+}
+
+#window-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    padding: 7px 12px;
+    color: white;
+    background: rgba(25, 25, 25, 0.65);
+    font-size: 13px;
+    z-index: 1000;
+    -webkit-app-region: drag;
+    user-select: none;
+}
+
+#game {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 32px);
+    overflow: hidden;
+    background: transparent;
+}
+
+#world {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: transparent;
+    isolation: isolate;
+}
+
+.scenery {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+}
+
+.tree {
+    width: 420px;
+    height: auto;
+    bottom: -2%;
+    z-index: 1;
+}
+
+#tree1 { left: 5%; }
+#tree2 { left: 65%; }
+
+.bush {
+    width: 220px;
+    height: auto;
+    bottom: -2%;
+    z-index: 2;
+}
+
+#bush1 { left: 35%; }
+#bush2 { left: 82%; }
+
+.ground {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 28%;
+    object-fit: fill;
+    z-index: 5;
+}
+
+#ground2 { left: 100%; }
+
+.hero {
+    position: absolute;
+    height: auto;
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* PARTY FORMATION: Black Mage takes Rabbit's old spot; Rabbit moves behind Black Mage. */
+#fox {
+    position: absolute;
+    left: 20%;
+    bottom: -2%;
+    width: 140px;
+    height: auto;
+    z-index: 20;
+}
+
+#bunny {
+    left: 6%;
+    bottom: -2%;
+    width: 112px;
+    z-index: 10;
+    position: absolute;
+    display: none;
+}
+
+#bear {
+    position: absolute;
+    left: 27%;
+    bottom: -2%;
+    width: 145px;
+    height: auto;
+    z-index: 25;
+}
+
+#squirrel {
+    position: absolute;
+    left: 13%;
+    bottom: -2%;
+    width: 120px;
+    height: auto;
+    z-index: 15;
+}
+
+#fox.eating-drinking-small,
+#bunny.eating-drinking-small,
+#bear.eating-drinking-small,
+#squirrel.eating-drinking-small {
+    transform: translateX(-50%) scale(0.65);
+}
+
+#campfire {
+    position: absolute;
+    left: 22%;
+    bottom: -2%;
+    width: 120px;
+    height: auto;
+    display: none;
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* BATTLE */
+#battle-layer {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: transparent;
+    z-index: 30;
+    pointer-events: none;
+}
+
+#battle-title {
+    position: absolute;
+    top: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    text-shadow: 1px 2px 4px black;
+}
+
+#battle-enemies {
+    position: absolute;
+    left: 45%;
+    bottom: -2%;
+    width: 42%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 12px;
+    overflow: visible;
+    z-index: 35;
+}
+
+.battle-enemy {
+    position: relative;
+    flex: 0 0 110px;
+    width: 110px;
+    height: 190px;
+    align-self: flex-end;
+    margin: 0;
+    transform: translateX(520px);
+    transition: transform 1.8s ease;
+}
+
+.battle-enemy.entered { transform: translateX(0); }
+
+.battle-enemy img {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    pointer-events: none;
+}
+
+/* Fox's 8-frame arrow flies from her to the chosen enemy after Attack frame 26. */
+.fox-arrow-projectile {
+    position: absolute;
+    z-index: 65;
+    width: 62px;
+    height: 62px;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Bear's 13-frame axe boomerang flies to the target, then returns to Bear. */
+.bear-axe-projectile {
+    position: absolute;
+    z-index: 66;
+    width: 220px;
+    height: 220px;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Skeleton Sonic Boom projectile. */
+.skeleton-sonic-boom {
+    position: absolute;
+    z-index: 67;
+    width: 225px;
+    height: 225px;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+}
+
+.battle-enemy img.squirrel-lightning-hit {
+    z-index: 5;
+    left: -100%;
+    bottom: -40%;
+    width: 300%;
+    height: 220%;
+    object-fit: contain;
+    object-position: center bottom;
+    pointer-events: none;
+}
+
+.battle-enemy img.white-mage-light-beam {
+    z-index: 6;
+    left: -100%;
+    bottom: -40%;
+    width: 300%;
+    height: 220%;
+    object-fit: contain;
+    object-position: center bottom;
+    pointer-events: none;
+}
+
+.battle-enemy.defeated { opacity: 0; }
+
+.skeleton-hp {
+    position: absolute;
+    top: 18px;
+    left: 15%;
+    width: 70%;
+    height: 5px;
+    overflow: hidden;
+    background: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    z-index: 2;
+}
+
+.skeleton-hp-fill { width: 100%; height: 100%; background: #e53935; }
+
+/* SUMMONS: transparent overlays, constrained to the game canvas */
+#fire-fox-summon,
+#healing-fluff-summon,
+#bear-axe-summon,
+#lightning-squirrel-summon {
+    position: absolute;
+    height: 78%;
+    max-height: 78%;
+    width: min(45vw, 480px);
+    max-width: 48%;
+    object-fit: contain;
+    object-position: bottom center;
+    display: none;
+    pointer-events: none;
+}
+
+#fire-fox-summon {
+    left: 48%;
+    bottom: 1%;
+    z-index: 70;
+}
+
+#healing-fluff-summon {
+    left: 7%;
+    bottom: 0;
+    z-index: 75;
+}
+
+#bear-axe-summon {
+    left: 48%;
+    bottom: 1%;
+    z-index: 76;
+}
+
+#lightning-squirrel-summon {
+    left: 48%;
+    bottom: 1%;
+    z-index: 70;
+}
+
+/* STATUS BARS — no card backgrounds, borders, or shadows */
+#status-panel {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: transparent;
+    z-index: 80;
+    pointer-events: none;
+}
+
+.status-card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: white;
+}
+
+.role-name {
+    display: block;
+    width: 100%;
+    color: white;
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black;
+    white-space: nowrap;
+}
+
+.status-lines { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+.status-line { display: flex; align-items: center; gap: 4px; width: 100%; height: 7px; }
+
+.bar-label {
+    width: 25px;
+    flex: 0 0 25px;
+    color: white;
+    font-size: 9px;
+    line-height: 9px;
+    font-weight: bold;
+    text-align: right;
+    text-shadow: 1px 1px 2px black;
+}
+
+.bar {
+    position: relative;
+    flex: 0 0 64px;
+    width: 64px;
+    height: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 2px;
+    background: rgba(20, 20, 20, 0.9);
+}
+
+.fill { width: 100%; height: 100%; transition: width 0.2s ease; }
+.fill.hp { background: #e53935; }
+.fill.limit { background: #ffd600; }
+
+.status-number {
+    display: inline-block;
+    width: 28px;
+    flex: 0 0 28px;
+    color: white;
+    font-size: 9px;
+    text-shadow: 1px 1px 2px black;
+}
+
+#fox-status { left: calc(20% - 62px); bottom: 33%; width: 124px; }
+#bunny-status { left: calc(6% - 62px); bottom: 17%; width: 124px; }
+#bear-status { left: calc(27% - 62px); bottom: 24%; width: 124px; }
+#squirrel-status { left: calc(13% - 62px); bottom: 25%; width: 124px; }
+
+/* SLEEPING ANIMATION FIXES — normal world/camp styling remains unchanged. */
+#fox.sleeping { width: 95px; }
+#bunny.sleeping { left: 10%; bottom: -4%; width: 75px; }
+#bear.sleeping { width: 100px; }
+#squirrel.sleeping { width: 85px; }
+
+/* Battle-only sleep/wake sizing and placement. */
+#bunny.battle-sleeping { left: 6% !important; bottom: -2% !important; width: 112px !important; }
+#bear.battle-sleeping { width: 170px !important; }
+#fox.battle-sleeping { width: 110px !important; height: auto !important; }
+#fox.battle-waking { width: 116px !important; height: auto !important; }
+
+/* Bear Healing and Wake Up are slightly larger during battle only. */
+#bear.battle-healing,
+#bear.battle-waking {
+    width: 160px !important;
+    height: auto !important;
+}
+
+/* Demon Kitty Fire Ball projectile: shift is controlled by game.js. */
+.demon-kitty-fireball {
+    position: absolute;
+    z-index: 9998;
+    width: 168px;
+    height: 168px;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+}
+
+.demon-kitty-fireball.flying {
+    animation: demon-kitty-fireball-flight 0.72s linear forwards;
+}
+
+@keyframes demon-kitty-fireball-flight {
+    from { transform: translate(-50%, -50%); }
+    to { transform: translate(calc(-50% + var(--fireball-x)), calc(-50% + var(--fireball-y))); }
+}
+
+/* Dark Flames: compact size, while preserving the user's 17 custom PNG frames. */
+.demon-kitty-dark-flames {
+    position: absolute !important;
+    z-index: 9999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 190px !important;
+    max-width: none !important;
+    height: 250px !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    object-position: bottom center !important;
+    transform: translate(-50%, -100%) !important;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 0 5px rgba(95, 20, 180, 0.5));
+}
+
+/* HIDE SCROLLBARS */
+html, body, #game, #world { scrollbar-width: none; }
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#game::-webkit-scrollbar,
+#world::-webkit-scrollbar { display: none; }

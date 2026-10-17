@@ -1,0 +1,12 @@
+{
+  "name": "fox-scroller",
+  "version": "1.0.0",
+  "description": "Fox chat scroller game",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^38.0.0"
+  }
+}
